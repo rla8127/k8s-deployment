@@ -1,5 +1,5 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Rollout # Rollout으로 생성
+kind: Rollout
 metadata:
   name: canary-rollout
 spec:
@@ -15,19 +15,20 @@ spec:
     spec:
       containers:
       - name: canary-rollouts-demo
-        image: particule/simplecolorapi:1.0
+        image: rla8127/test:RB0.0.9
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
-  # 이 부분에서 카나리로 지정
   strategy:
     canary:
-      maxSurge: "25%"    # canary 배포로 생성할 pod의 비율
-      maxUnavailable: 0  # 업데이트 될 때 사용할 수 없는 pod의 최대 수
+      maxSurge: "25%"          ## 배포되는 Pod의 비율
+      maxUnavailable: 0        ## 배포될 때 Unavailable 되도 되는 Pod의 수를 뜻함     
       steps:
-      - setWeight: 25    # 카나리로 배포된 서버로 전송해야될 트래픽 비율
-      - pause: {}        # AutoPromotion Time (하단 설명 참조)
+      - setWeight: 25          ## Weight 값을 조절하여 트래픽을 어느 정도 인가하는지에 대한 옵션
+      - pause: {}              ## AutoPromotion Time (하단 설명 참조)
+      
 ---
+
 kind: Service
 apiVersion: v1
 metadata:
