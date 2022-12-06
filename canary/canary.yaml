@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: canary-rollouts-demo
-        image: rla8127/test:RB0.0.9
+        image: rla8127/test:RB0.0.8
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
