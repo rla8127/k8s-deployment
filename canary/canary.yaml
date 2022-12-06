@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: canary-rollout
+spec:
+  replicas: 8
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: canary
+  template:
+    metadata:
+      labels:
+        app: canary
+    spec:
+      containers:
+      - name: canary-rollouts-demo
+        image: rla8127/test:RB0.0.9
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+  strategy:
+    canary:
+      maxSurge: "25%"          ## 배포되는 Pod의 비율
+      maxUnavailable: 0        ## 배포될 때 Unavailable 되도 되는 Pod의 수를 뜻함     
+      steps:
+      - setWeight: 25          ## Weight 값을 조절하여 트래픽을 어느 정도 인가하는지에 대한 옵션
+      - pause: {}              ## AutoPromotion Time (하단 설명 참조)
+      
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: canary-service
+spec:
+  selector:
+    app: canary
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+    nodePort: 30081
+  type: NodePort
